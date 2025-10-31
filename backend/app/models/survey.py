@@ -9,8 +9,10 @@ class SurveyBase(SQLModel):
     is_anonymous: str = Field()
     status: str = Field(default="inactive")
 
-class SurveyCreate(SurveyBase):
+
+class SurveyCreate(SQLModel):
     pass
+
 
 class Survey(SurveyBase, table = True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
@@ -19,4 +21,4 @@ class Survey(SurveyBase, table = True):
     last_updated: datetime
     user_id: uuid.UUID 
      
-    users: list["User"] = Relationship(back_populates="survey")  
+    user: User = Relationship(back_populates="surveys")  
