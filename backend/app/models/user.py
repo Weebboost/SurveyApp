@@ -1,9 +1,14 @@
 import uuid
 
+from typing import TYPE_CHECKING
 from pydantic import EmailStr
 from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime
-from .survey import Survey
+
+
+if TYPE_CHECKING:
+    from .survey import Survey
+
 
 class UserBase(SQLModel):
     email: EmailStr = Field(unique = True, index = True, max_length=255)
@@ -19,6 +24,6 @@ class User(UserBase, table = True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     hashed_password: str
     created_at: datetime
-    is_active: bool
+    is_active: bool = Field(default=True)
 
-    surveys: list['Survey'] = Relationship(back_populates="user")
+    surveys: list["Survey"] = Relationship(back_populates="user")
