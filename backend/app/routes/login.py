@@ -19,4 +19,4 @@ async def login_for_access_token(*, session: Session = Depends(get_session), for
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
             )
-    return Token(create_access_token(user.id, timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)))
+    return Token(access_token=create_access_token(user.id, timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)))

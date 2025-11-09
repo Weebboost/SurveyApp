@@ -4,10 +4,7 @@ from typing import TYPE_CHECKING
 from pydantic import EmailStr
 from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime
-
-
-if TYPE_CHECKING:
-    from .survey import Survey
+from .survey import Survey
 
 
 class UserBase(SQLModel):

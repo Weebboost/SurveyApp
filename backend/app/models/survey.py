@@ -2,7 +2,11 @@ import uuid
 
 from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime
-from .user import User
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    from .user import User
+
 
 class SurveyBase(SQLModel):
     name: str = Field(max_length=255)
@@ -20,5 +24,5 @@ class Survey(SurveyBase, table = True):
     last_updated: datetime | None
 
     user_id: uuid.UUID = Field(foreign_key="user.id")
-    user: User = Relationship(back_populates="surveys")  
+    user: Optional["User"] = Relationship(back_populates="surveys")  
     

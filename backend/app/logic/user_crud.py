@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from ..models.user import UserCreate, User, UserPublic
 from ..core.password_utils import hash_password
 
+import uuid
 
 def create_user (session: Session, user_create: UserCreate) -> User | None:
      user = User.model_validate(
@@ -35,3 +36,7 @@ def get_users (session: Session) -> list[UserPublic]:
 def delete_user (session: Session, user: User):
      session.delete(user)
      session.commit()
+
+
+def get_user_by_id(session: Session, user_id: str) -> User:
+     return session.get(User, uuid.UUID(user_id))
