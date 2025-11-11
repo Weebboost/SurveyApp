@@ -1,7 +1,7 @@
-from sqlmodel import Session
+from sqlmodel import Session, select
 from ..models.survey import Survey, SurveyCreate
 from ..models.question import QuestionCreate, QuestionAnswerOptionCreate, Question
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import uuid
 
 def get_survey(session: Session, survey_id: int) -> Survey | None:
@@ -10,13 +10,20 @@ def get_survey(session: Session, survey_id: int) -> Survey | None:
 
 def create_survey(session: Session, 
                   survey_create: SurveyCreate, 
-                  user_id: uuid.UUID) -> Survey:
+                  user_id: uuid.UUID
+                  ) -> Survey:
     
+    if survey_create.expires_delta:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=survey_create.expires_delta)
+    else:
+        expire = datetime.now(timezone.utc) + timedelta(days=30)
+
+    survey = Survey()
     survey = Survey.model_validate(
         survey_create,
         update= {
             "created_at": datetime.now(timezone.utc),
-            "expires_at": datetime.now(timezone.utc),
+            "expires_at": expire,
             "last_updated": datetime.now(timezone.utc),
             "user_id": user_id
         }
@@ -27,3 +34,11 @@ def create_survey(session: Session,
     session.refresh(survey)
 
     return survey
+
+
+def get_all_user_surveys(session: Session, user_id: uuid.UUID) -> list | None:
+    return session.exec(select(Survey).where(Survey.user_id == user_id)).all()
+
+
+def get_survey_by_name(session: Session, name: str) -> list | None:
+    return session.exec(select(Survey).where(Survey.name == name)).all()
