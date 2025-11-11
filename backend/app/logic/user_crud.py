@@ -1,9 +1,11 @@
 from sqlmodel import Session, select
 from datetime import datetime, timezone
-from ..models.user import UserCreate, User, UserPublic
+from ..models.user import UserCreate, User, UserPublic, UserUpdate
 from ..core.password_utils import hash_password
-
+from sqlalchemy.exc import IntegrityError
 import uuid
+from ..core.exceptions import EmailAlreadyExistsException
+
 
 def create_user (session: Session, user_create: UserCreate) -> User | None:
      user = User.model_validate(
@@ -13,12 +15,14 @@ def create_user (session: Session, user_create: UserCreate) -> User | None:
                "created_at": datetime.now(timezone.utc)
                }
           )
-
      session.add(user)
-     session.commit()
-     session.refresh(user)
-     
-     return user
+     try:
+          session.commit()
+          session.refresh(user)
+          return user
+     except IntegrityError as e:
+          session.rollback()
+          raise EmailAlreadyExistsException("Email already exists.")
 
 
 def get_user_by_email(session: Session, email: str) -> User | None:
@@ -28,9 +32,8 @@ def get_user_by_email(session: Session, email: str) -> User | None:
           return None
 
 
-def get_users (session: Session) -> list[UserPublic]:
-     users = session.exec(select(User)).all()
-     return [UserPublic.model_validate(user) for user in users]
+def get_users (session: Session) -> list[User]:
+     return session.exec(select(User)).all()
 
 
 def delete_user (session: Session, user: User):
@@ -38,5 +41,21 @@ def delete_user (session: Session, user: User):
      session.commit()
 
 
-def get_user_by_id(session: Session, user_id: str) -> User:
-     return session.get(User, uuid.UUID(user_id))
+def get_user_by_id(session: Session, user_id: uuid.UUID) -> User:
+     return session.get(User, user_id)
+
+
+def update_user(session: Session, user: User, user_update: UserUpdate):
+     if user_update.email:
+          user.email = user_update.email
+     if user_update.password:
+          user.hashed_password = hash_password(user_update.password)
+
+     session.add(user)
+     try:
+          session.commit()
+          session.refresh(user)
+          return user
+     except IntegrityError as e:
+          session.rollback()
+          raise EmailAlreadyExistsException("Email already exist.")
