@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from ..models.user import UserCreate, User, UserPublic, UserUpdate
 from ..core.db import get_session
-from ..logic import user_crud
+from ..logic.crud import user_crud
 from sqlmodel import Session
 from fastapi import APIRouter, Depends
 from typing import Annotated

@@ -9,16 +9,16 @@ from sqlmodel import Session
 from fastapi import APIRouter, Depends
 from typing import Annotated
 from ..core.auth import get_current_user, get_superuser
-from ..logic import survey_crud
+from ..logic.crud import survey_crud
 
 router = APIRouter (
     prefix = "/survey",
     tags = ["survey"]
 )
 
-@router.post("/")
+@router.post("/", response_model=SurveyPublic)
 def create_survey(*, session: Session = Depends(get_session), user: Annotated[User, Depends(get_current_user)], survey_create: SurveyCreate):
-    survey_crud.create_survey(session=session, user_id=user.id, survey_create=survey_create)
+    return survey_crud.create_survey(session=session, user_id=user.id, survey_create=survey_create)
 
 
 @router.get("/", response_model = list[SurveyPublic])
