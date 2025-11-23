@@ -3,9 +3,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(
-        env_file="../.env",
-        extra="ignore"
-    )
+        env_file = "..\.env",
+        extra = "ignore"
+        )
 
     PROJECT_NAME: str = "Surveys API"
     API_V1_PREFIX: str = "/api/v1"
