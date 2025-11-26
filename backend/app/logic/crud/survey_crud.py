@@ -1,10 +1,14 @@
 from sqlmodel import Session, select
 from ...models.survey import Survey, SurveyCreate
+from sqlalchemy.orm import selectinload
 from datetime import datetime, timezone, timedelta
 import uuid
 
-def get_survey_by_id(session: Session, survey_id: uuid.UUID) -> Survey | None:
-    return session.get(Survey, survey_id)
+def get_survey_by_id(session: Session, survey_id: uuid.UUID) -> Survey:
+    return session.exec(
+        select(Survey)
+        .where(Survey.id == survey_id)
+        .options(selectinload(Survey.questions))).one()
 
 
 def create_survey(session: Session, 
@@ -29,9 +33,6 @@ def create_survey(session: Session,
     )
     
     session.add(survey)
-    session.commit()
-    session.refresh(survey)
-
     return survey
 
 
