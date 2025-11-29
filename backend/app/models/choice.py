@@ -13,7 +13,7 @@ class ChoiceBase(SQLModel):
 
 
 class ChoiceCreate(ChoiceBase):
-    question_position: int
+    pass
 
 
 class Choice(ChoiceBase, table=True):
