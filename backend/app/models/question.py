@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
     from .survey import Survey
-    from .choice import Choice
+    from .choice import Choice, ChoiceCreate
 
 
 class Answer_type(str, Enum):
@@ -21,7 +21,7 @@ class QuestionBase(SQLModel):
 
 
 class QuestionCreate(QuestionBase):
-    pass
+    choices: list["ChoiceCreate"]
 
 
 class QuestionPublic(QuestionBase):
@@ -32,5 +32,6 @@ class Question(QuestionBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     survey_id: uuid.UUID = Field(foreign_key="survey.id")
 
-    choices: List["Choice"] = Relationship(back_populates="question")
+    choices: List["Choice"] = Relationship(back_populates="question",
+                                           sa_relationship_kwargs={"cascade": "all, delete"})
     survey: "Survey" = Relationship(back_populates="questions")
