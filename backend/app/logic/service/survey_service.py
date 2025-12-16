@@ -41,4 +41,10 @@ def get_survey_by_name(session: Session, name: str, user_id = uuid.UUID) -> list
     return [survey for survey in surveys if survey.user_id == user_id]
     
     
+@transactional()
+def update_survey_last_updated(session: Session, survey_id: uuid.UUID):
+    survey = survey_crud.get_survey_by_id(session=session, survey_id=survey_id)
+    survey.last_updated =  datetime.now(timezone.utc)
+    return survey
+    
 

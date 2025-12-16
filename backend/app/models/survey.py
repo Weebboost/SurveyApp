@@ -2,10 +2,17 @@ import uuid
 from sqlmodel import SQLModel, Field, Relationship
 from datetime import datetime
 from typing import TYPE_CHECKING
+from enum import Enum
 
 if TYPE_CHECKING:
     from .user import User
     from .question import Question, QuestionPublic
+
+
+class StatusEnum(str, Enum):
+    public = "public"
+    private = "private"
+    expired = "expired"
 
 
 class SurveyBase(SQLModel):
@@ -21,8 +28,7 @@ class Survey(SurveyBase, table = True):
     created_at: datetime
     expires_at: datetime
     last_updated: datetime
-    status: str = Field(default="private")
-    is_active: bool = Field(default=False)
+    status: StatusEnum = Field(default=StatusEnum.private)
     user_id: uuid.UUID = Field(foreign_key="user.id")
 
     user: "User" = Relationship(back_populates="surveys") 
@@ -37,7 +43,6 @@ class SurveyPublic(SurveyBase):
     created_at: datetime
     expires_at: datetime
     last_updated: datetime
-    status: str
-    is_active: bool
+    status: StatusEnum
 
     questions: list["QuestionPublic"]
