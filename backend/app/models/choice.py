@@ -16,6 +16,10 @@ class ChoiceCreate(ChoiceBase):
     pass
 
 
+class ChoicePublic(ChoiceBase):
+    pass
+
+
 class Choice(ChoiceBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     question_id: uuid.UUID = Field(foreign_key="question.id")
