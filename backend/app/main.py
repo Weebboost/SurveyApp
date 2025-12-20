@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from .routes import user_router, login, survey_router, question_router
+from .routes import user_router, login, survey_router, question_router, submission_router
 from .core.db import engine
 from . import models
 from sqlmodel import SQLModel
@@ -11,6 +11,7 @@ app.include_router(user_router.router)
 app.include_router(login.router)
 app.include_router(survey_router.router)
 app.include_router(question_router.router)
+app.include_router(submission_router.router)
 
 @app.get("/")
 def root():
