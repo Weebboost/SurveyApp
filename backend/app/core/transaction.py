@@ -1,5 +1,5 @@
-from sqlalchemy.exc import SQLAlchemyError, IntegrityError
-from ..core.exceptions import DatabaseError, EmailAlreadyExistsException, CouldNotCreateResource, NotFoundError
+from sqlalchemy.exc import SQLAlchemyError
+from ..core.exceptions import DatabaseError, CouldNotCreateResource, NotFoundError
 from functools import wraps
 
 def transactional(refresh_returned_instance: bool = False):
@@ -9,11 +9,15 @@ def transactional(refresh_returned_instance: bool = False):
         @wraps(func)
         def wrapper(*args, **kwargs):
             session = kwargs.get("session")
+            print(f"Starting transaction for function: {func.__name__}")
+            print("Kwargs:", kwargs)
+            print("Args:", args)
             try:
                 result = func(*args, **kwargs)
+                print("Session:",  session)
                 if session is not None:
                     session.commit()
-
+                    print("Transaction committed successfully.")
                     if refresh_returned_instance and result is not None:
 
                         if hasattr(result, "__table__"):
@@ -23,17 +27,11 @@ def transactional(refresh_returned_instance: bool = False):
                             for item in result:
                                 if hasattr(item, "__table__"):
                                     session.refresh(item)
-
-                return result
-
-            except IntegrityError as e:
-                session.rollback()
-                raise EmailAlreadyExistsException("Email already exists.")    
-            
-            except SQLAlchemyError as e:
-                if session is not None:
-                    session.rollback()
-                raise DatabaseError("Database error") from e
+                else:
+                    raise DatabaseError("No session provided to transactional function")
+                
+                return result   
+        
             
             except CouldNotCreateResource:
                 if session:
@@ -43,7 +41,13 @@ def transactional(refresh_returned_instance: bool = False):
             except NotFoundError:
                 if session:
                     session.rollback()
-                raise     
+                raise   
+
+            except SQLAlchemyError as e:
+                print(f"Database error occurred in function {func.__name__}: {e}")
+                if session:
+                    session.rollback()
+                raise DatabaseError("Database error") from e
             
         return wrapper
     
