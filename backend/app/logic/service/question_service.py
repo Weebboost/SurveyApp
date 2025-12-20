@@ -18,12 +18,12 @@ def is_correct_order(elements) -> bool:
     
 
 @transactional()
-def get_all_survey_questions(session: Session, survey_id: uuid.UUID) -> list[Question]:
-    return question_crud.get_all_survey_questions(session=session, survey_id=survey_id)
+def get_all_survey_questions(*, session: Session, survey_id: uuid.UUID) -> list[Question]:
+    return question_crud.get_questions_by_survey_id(session=session, survey_id=survey_id)
     
     
 @transactional()
-def delete_survey_question(session: Session, question_id: uuid.UUID):
+def delete_survey_question(*, session: Session, question_id: uuid.UUID):
 
     question = question_crud.get_question_by_id(session=session, question_id=question_id)
 
@@ -34,7 +34,7 @@ def delete_survey_question(session: Session, question_id: uuid.UUID):
     
 
 @transactional()
-def delete_exsited(session: Session, survey_id = uuid.UUID): 
+def delete_exsited(*, session: Session, survey_id = uuid.UUID): 
     questions = get_all_survey_questions(session=session, survey_id=survey_id)
 
     for question in questions:
@@ -64,7 +64,7 @@ def validate_questions_creation(questions: list[QuestionCreate], survey: Survey)
     
 
 @transactional(refresh_returned_instance=True)
-def create_or_update_questions_for_survey(session: Session, questions: list[QuestionCreate], survey: Survey) -> list[Question]:
+def create_or_update_questions_for_survey(*, session: Session, questions: list[QuestionCreate], survey: Survey) -> list[Question]:
 
     validate_questions_creation(questions=questions, survey=survey)
 
@@ -85,3 +85,7 @@ def create_or_update_questions_for_survey(session: Session, questions: list[Ques
     update_survey_last_updated(session=session, survey_id=survey.id)
 
     return created
+
+@transactional()
+def get_questions_by_survey_id(*, session: Session, survey_id: uuid.UUID) -> list[Question]:
+    return question_crud.get_questions_by_survey_id(session=session, survey_id=survey_id)

@@ -20,7 +20,7 @@ def create_or_update_questions_for_survey(*,
                                 questions: list[QuestionCreate],  
                                 survey = Depends(survey_owner_required)
                                 ):
-    return question_service.create_or_update_questions_for_survey(session=session, questions=questions, survey_id=survey.id)
+    return question_service.create_or_update_questions_for_survey(session=session, questions=questions, survey=survey)
 
 
 @router.get("/{survey_id}/", response_model=list[QuestionPublic])

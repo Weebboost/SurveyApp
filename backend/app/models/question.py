@@ -26,7 +26,7 @@ class QuestionCreate(QuestionBase):
 
 class QuestionPublic(QuestionBase):
     choices: list["ChoicePublic"]
-
+    id: uuid.UUID
 
 class Question(QuestionBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)

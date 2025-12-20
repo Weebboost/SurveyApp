@@ -13,7 +13,7 @@ def create_question(session: Session, question: QuestionBase) -> Question:
     return question
 
 
-def get_all_survey_questions(session: Session, survey_id: uuid.UUID) -> list[Question] | None:
+def get_questions_by_survey_id(session: Session, survey_id: uuid.UUID) -> list[Question] | None:
     return session.exec(select(Question).where(Question.survey_id == survey_id)).all()
 
 
