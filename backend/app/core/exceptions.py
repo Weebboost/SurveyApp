@@ -5,11 +5,6 @@ class BaseException(Exception):
         super().__init__(self.message)
 
 
-class EmailAlreadyExistsException(BaseException):
-    def __init__(self, message, status_code = 409):
-        super().__init__(message, status_code)
-
-
 class CouldNotCreateResource(BaseException):
     def __init__(self, message, status_code = 404):
         super().__init__(message, status_code)   
