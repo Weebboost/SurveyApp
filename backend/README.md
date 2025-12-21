@@ -17,8 +17,17 @@ pip install -r requirements.txt
 
 3. Configure environment variables
    
-Create or open the .env file and set the required values
+Create or open the .env file in .\backend directory and set the required values
 
+```bash
+SECRET_KEY = 
+
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_SERVER=
+POSTGRES_PORT=
+POSTGRES_DB=
+```
 
 4. Run application
 ```bash
