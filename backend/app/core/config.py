@@ -12,12 +12,20 @@ class Settings(BaseSettings):
 
     PROJECT_NAME: str = "Surveys API"
     API_V1_PREFIX: str = "/api/v1"
-
+    FRONTEND_URL: str = "http://127.0.0.1:8000"
+    
     #Security
     SECRET_KEY: str 
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    CONFIRMATION_TOKEN_EXPIRE_MINUTES: int = 10
 
+    #Mail
+    AWS_ACCESS_KEY_ID: str
+    AWS_SECRET_ACCESS_KEY: str
+    REGION_NAME: str
+    DOMAIN_MAIL: str
+    
     #Database
     POSTGRES_USER : str 
     POSTGRES_PASSWORD : str
