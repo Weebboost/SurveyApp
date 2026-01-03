@@ -5,6 +5,11 @@ class BaseException(Exception):
         super().__init__(self.message)
 
 
+class UnauthorizedError(BaseException):
+    def __init__(self, message, status_code = 401):
+        super().__init__(message, status_code)
+        
+
 class CouldNotCreateResource(BaseException):
     def __init__(self, message, status_code = 404):
         super().__init__(message, status_code)   
