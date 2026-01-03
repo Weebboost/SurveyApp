@@ -1,18 +1,19 @@
+from .api.v1 import auth, question, submission, user
 from .core.config import settings
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from .routes import user_router, login, survey_router, question_router, submission_router
+from .api.v1 import survey
 from .core.db import engine
 from . import models
 from sqlmodel import SQLModel
 from .core.exceptions import BaseException
 app = FastAPI(debug=True)
 
-app.include_router(user_router.router)
-app.include_router(login.router)
-app.include_router(survey_router.router)
-app.include_router(question_router.router)
-app.include_router(submission_router.router)
+app.include_router(user.router)
+app.include_router(auth.router)
+app.include_router(survey.router)
+app.include_router(question.router)
+app.include_router(submission.router)
 
 @app.get("/")
 def root():
