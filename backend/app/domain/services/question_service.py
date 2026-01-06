@@ -49,17 +49,17 @@ def validate_questions_creation(questions: list[QuestionCreate], survey: Survey)
     if not is_correct_order(elements=questions):
         raise CouldNotCreateResource(message="The proper order of questions was not followed")
         
-    for question_base in questions:
+    for question in questions:
 
-        if question_base.choices and not is_correct_order(elements=question_base.choices):
+        if question.choices and not is_correct_order(elements=question.choices):
             raise CouldNotCreateResource(message="The proper order of choices was not followed")
         
-        if question_base.answer_type in ["close", "multiple"]:
-            if not question_base.choices or len(question_base.choices) < 2:
+        if question.answer_type in ["close", "multiple"]:
+            if not question.choices or len(question.choices) < 2:
                 raise CouldNotCreateResource(message="Questions with close or multiple answer types must have at least two choices")
             
-        if question_base.answer_type == "open":
-            if question_base.choices:
+        if question.answer_type == "open":
+            if question.choices:
                 raise CouldNotCreateResource(message="Questions with open answer type cannot have choices")
     
 
