@@ -11,8 +11,8 @@ class Settings(BaseSettings):
         )
 
     PROJECT_NAME: str = "Surveys API"
-    API_V1_PREFIX: str = "/api/v1"
-    FRONTEND_URL: str = "http://127.0.0.1:8000"
+    API_V1_PREFIX: str
+    FRONTEND_URL: str
     
     #Security
     SECRET_KEY: str 
