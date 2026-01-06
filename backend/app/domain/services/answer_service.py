@@ -1,3 +1,4 @@
+from collections import defaultdict
 import uuid
 from ...models.answer import AnswerCreate, Answer
 from sqlmodel import Session
@@ -5,6 +6,7 @@ from ...core.transaction import transactional
 from ...models.question import Question
 from ...core.exceptions import CouldNotCreateResource
 from ..repositories import answer_repository    
+from ...models.question import AnswerEnum
 
 @transactional()
 def submit_answers(session: Session, answers_create: list[AnswerCreate], submission_id: uuid.UUID) -> list[Answer]:
@@ -15,18 +17,34 @@ def submit_answers(session: Session, answers_create: list[AnswerCreate], submiss
 
 def validate_answers_creation(answers_create: list[AnswerCreate], questions: list[Question]) -> None:
     
-    for question in questions:
-        answer = [a for a in answers_create if a.question_id == question.id]
+    question_ids = {q.id for q in questions}
 
-        if question.answer_type == "open":
-            if len(answer) != 1:
+    for answer in answers_create:
+        if answer.question_id not in question_ids:
+            raise CouldNotCreateResource("Answer refers to non-existing question")
+
+    answers_by_question = defaultdict(list)
+    for a in answers_create:
+        answers_by_question[a.question_id].append(a)
+
+    for question in questions:
+        answers = answers_by_question.get(question.id, [])
+
+        if question.answer_type == AnswerEnum.open:
+            if len(answers) != 1:
                 raise CouldNotCreateResource(f"Open question {question.id} must have exactly one answer.")
-        
-        if question.answer_type == "multiple" or question.answer_type == "close":
-            if len(answer) < 1:
-                raise CouldNotCreateResource(f"Multiple choice question {question.id} must have at least one answer.")
+
+        elif question.answer_type == AnswerEnum.close:
+            if len(answers) != 1:
+                raise CouldNotCreateResource(f"Close question {question.id} must have exactly one answer.")
+
+        elif question.answer_type == AnswerEnum.multiple:
+            if len(answers) < 1:
+                raise CouldNotCreateResource(f"Multiple question {question.id} must have at least one answer.")
+
+        if question.answer_type in {AnswerEnum.close, AnswerEnum.multiple}:
+            choices = {choice.content for choice in question.choices}
             
-            choices = [choice.content for choice in question.choices]
-            for a in answer:
+            for a in answers:
                 if a.response not in choices:
-                    raise CouldNotCreateResource(f"Answer to multiple choice question {question.id} must be one of the predefined choices.")
+                    raise CouldNotCreateResource(f"Answer to question {question.id} must be one of the predefined choices.")
