@@ -17,7 +17,7 @@ def send_confirmation_email(to_address: str, confirmation_link: str):
         },
         Message={
             "Subject": {
-                "Data": "Welcome to Surveys App - Confirm your email 🚀",
+                "Data": "Welcome to Surveys App - Confirm your email",
                 "Charset": "UTF-8"
             },
             "Body": {
