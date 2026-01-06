@@ -28,3 +28,13 @@ class AccessDeniedError(BaseException):
 class DatabaseError(BaseException):
      def __init__(self, message, status_code = 404):
         super().__init__(message, status_code)   
+
+
+class InvalidTokenException(UnauthorizedError):
+    def __init__(self, message="Invalid token provided", status_code = 401):
+        super().__init__(message, status_code)
+
+
+class TokenExpiredException(UnauthorizedError):
+    def __init__(self, message="Token has expired", status_code = 401):
+        super().__init__(message, status_code)

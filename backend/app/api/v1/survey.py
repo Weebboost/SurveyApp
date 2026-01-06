@@ -8,7 +8,7 @@ from ...core.db import get_session
 from sqlmodel import Session
 from fastapi import APIRouter, Depends
 from typing import Annotated
-from ...core.auth import get_current_user
+from ..authenticate_user import get_current_user
 from ...domain.policies import survey_owner_required
 from ...domain.services import survey_service
 

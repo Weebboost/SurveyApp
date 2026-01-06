@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     CONFIRMATION_TOKEN_EXPIRE_MINUTES: int = 10
+    PASSWORD_RESET_TOKEN_EXPIRE_MINUTES: int = 10
 
     #Mail
     AWS_ACCESS_KEY_ID: str

@@ -1,7 +1,7 @@
 from fastapi import Depends
 from sqlalchemy.orm import Session
 from ..core.db import get_session
-from ..core.auth import get_current_user
+from ..api.authenticate_user import get_current_user
 from ..models.user import User
 from .repositories.survey_repository import get_survey_by_id
 import uuid

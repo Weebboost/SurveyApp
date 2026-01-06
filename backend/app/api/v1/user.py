@@ -4,7 +4,7 @@ from ...core.db import get_session
 from sqlmodel import Session
 from fastapi import APIRouter, Depends
 from typing import Annotated
-from ...core.auth import get_current_user
+from ..authenticate_user import get_current_user, get_superuser
 from ...domain.services import user_service
 
 
@@ -14,7 +14,7 @@ router = APIRouter (
 )
 
 @router.get("/all_users", response_model=list[UserPublic])
-def get_users(*, session: Session = Depends(get_session)):
+def get_users(*, session: Session = Depends(get_session), user: Annotated[User, Depends(get_superuser)]):
     return user_service.get_users(session=session)
 
 
@@ -23,9 +23,9 @@ def get_user(*, user: Annotated[User, Depends(get_current_user)]):
     return user
 
 
-@router.post("/")
+@router.post("/", response_model=UserPublic)
 def create_user(*, session: Session = Depends(get_session), user: UserCreate):
-    user_service.create_user(session=session, user_create=user)
+    return user_service.create_user(session=session, user_create=user)
 
 
 @router.delete("/")

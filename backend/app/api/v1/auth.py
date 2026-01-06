@@ -4,10 +4,14 @@ from typing import Annotated
 from ...models.token import Token
 from ...core.db import get_session
 from sqlmodel import Session
-from ...core.auth import authenticate_user, create_token
+from ...core.auth import create_token
+from ...domain.services.auth_service import authenticate_user
 from datetime import timedelta
 from ...core.config import settings
-from ...domain.services import email_confirmation_service
+from ...domain.auth import email_confirmation
+from ...domain.auth import password_confirmation
+from ..schemas.auth import EmailRequest, PasswordResetConfirmRequest
+
 
 router = APIRouter(
     prefix="/auth",
@@ -26,6 +30,21 @@ async def login_for_access_token(*, session: Session = Depends(get_session), for
     return Token(access_token=create_token(user.id, timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)))
 
 
-@router.get("/confirm-email")
-async def confirm_email(*, session: Session = Depends(get_session), token: str):
-    await email_confirmation_service.confirm_email(session=session, token=token)
+@router.post("/email/confirmation")
+async def confirm_email(*, session: Session = Depends(get_session), data: EmailRequest):
+    await email_confirmation.complete_email_confirmation(session=session, token=data.token)
+
+
+@router.post("/email/send-confirmation-mail")
+async def send_confirmation_email(*, session: Session = Depends(get_session), email: str):
+    await email_confirmation.initiate_email_confirmation(session=session, email=email)
+
+
+@router.post("/password/reset")
+async def reset_password(*, session: Session = Depends(get_session), data: PasswordResetConfirmRequest):
+    await password_confirmation.complete_password_reset(session=session, token=data.token, new_password=data.new_password)
+
+
+@router.post("/password/send-reset-mail")
+async def send_password_reset_email(*, session: Session = Depends(get_session), email: str):
+    await password_confirmation.initiate_password_reset(session=session, email=email)
